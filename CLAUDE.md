@@ -52,3 +52,4 @@
 - Do not stop after one screenshot pass
 - Do not use `transition-all`
 - Do not use default Tailwind blue/indigo as primary color
+- Do not automatically sync updates to GitHub. When I am making changes or updates with you here, we are always going to test on local host until I tell you explicitly to commit the changes to github.
