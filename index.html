@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scatterday Systems — Wired for the way you live.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: '#232323',
+            light: '#ffffff',
+            'dark-muted': '#2e2e2e',
+            'dark-border': '#383838',
+            'light-muted': '#f5f5f5',
+            'text-muted': '#8a8a8a',
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          },
+          letterSpacing: {
+            tightest: '-0.04em',
+            tighter: '-0.03em',
+            tight: '-0.02em',
+            wide: '0.08em',
+            widest: '0.15em',
+          },
+          lineHeight: {
+            relaxed: '1.7',
+            loose: '1.85',
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #232323;
+      color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Noise texture overlay ───────────────────────────── */
+    .noise {
+      position: relative;
+    }
+    .noise::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      opacity: 0.028;
+      z-index: 0;
+    }
+    .noise > * { position: relative; z-index: 1; }
+
+    /* ── Typography ──────────────────────────────────────── */
+    .display-heading {
+      font-size: clamp(2.6rem, 6vw, 5.5rem);
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+    }
+    .section-heading {
+      font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .body-copy {
+      font-weight: 300;
+      line-height: 1.75;
+      font-size: 1.05rem;
+    }
+
+    /* ── Nav ─────────────────────────────────────────────── */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(35, 35, 35, 0.82);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    #nav.scrolled {
+      background: rgba(35, 35, 35, 0.97);
+      border-bottom-color: rgba(255,255,255,0.1);
+    }
+    .nav-link {
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      padding: 0.25rem 0;
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0; right: 100%;
+      height: 1px;
+      background: #ffffff;
+      transition: right 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .nav-link:hover { color: #ffffff; }
+    .nav-link:hover::after { right: 0; }
+
+    /* ── Buttons ─────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #ffffff;
+      color: #232323;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.875rem 2.25rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .btn-primary:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .btn-primary:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 3px;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: rgba(255,255,255,0.75);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.875rem 2.25rem;
+      border: 1px solid rgba(255,255,255,0.25);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn-ghost:hover {
+      color: #ffffff;
+      border-color: rgba(255,255,255,0.7);
+      transform: translateY(-2px);
+    }
+    .btn-ghost:active { transform: translateY(0); }
+    .btn-ghost:focus-visible {
+      outline: 2px solid rgba(255,255,255,0.5);
+      outline-offset: 3px;
+    }
+
+    .btn-dark {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #232323;
+      color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.875rem 2.25rem;
+      border: 1px solid rgba(35,35,35,0.9);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .btn-dark:hover {
+      background: #1a1a1a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .btn-dark:active { transform: translateY(0); }
+    .btn-dark:focus-visible {
+      outline: 2px solid #232323;
+      outline-offset: 3px;
+    }
+
+    /* ── Hero ────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: 90px;
+      background-color: #232323;
+      position: relative;
+      overflow: hidden;
+    }
+    #hero .glow-1 {
+      position: absolute;
+      top: -20%;
+      right: -10%;
+      width: 60vw;
+      height: 60vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.032) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #hero .glow-2 {
+      position: absolute;
+      bottom: -15%;
+      left: -5%;
+      width: 40vw;
+      height: 40vw;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.018) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── Service Cards ───────────────────────────────────── */
+    .service-card {
+      background: #ffffff;
+      border: 1px solid rgba(35,35,35,0.06);
+      padding: 2.5rem 2rem;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+      box-shadow:
+        0 1px 3px rgba(35,35,35,0.05),
+        0 4px 12px rgba(35,35,35,0.04);
+      cursor: default;
+    }
+    .service-card:hover {
+      transform: translateY(-6px);
+      box-shadow:
+        0 2px 4px rgba(35,35,35,0.08),
+        0 12px 32px rgba(35,35,35,0.1),
+        0 24px 48px rgba(35,35,35,0.06);
+    }
+    .service-icon {
+      width: 44px;
+      height: 44px;
+      margin-bottom: 1.5rem;
+      color: #232323;
+    }
+    .service-card h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: #232323;
+      margin-bottom: 0.75rem;
+    }
+    .service-card p {
+      font-size: 0.875rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: #555555;
+    }
+
+    /* ── Why cards ───────────────────────────────────────── */
+    .why-item {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+    .why-number {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.3);
+      padding-top: 0.2rem;
+      flex-shrink: 0;
+      min-width: 2rem;
+    }
+    .why-item h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.4rem;
+    }
+    .why-item p {
+      font-size: 0.875rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ── Client cards ────────────────────────────────────── */
+    .client-card {
+      border-top: 1px solid rgba(35,35,35,0.12);
+      padding-top: 2rem;
+    }
+    .client-card h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: #232323;
+      margin-bottom: 0.75rem;
+    }
+    .client-card p {
+      font-size: 0.875rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: #555555;
+    }
+
+    /* ── Divider ─────────────────────────────────────────── */
+    .section-divider {
+      width: 2.5rem;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.3;
+      margin: 1.25rem 0;
+    }
+
+    /* ── Scroll reveal ───────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ── Mobile menu ─────────────────────────────────────── */
+    #mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      background: #1e1e1e;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 1rem 0;
+    }
+    #mobile-menu.open { display: flex; }
+    .mobile-nav-link {
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .mobile-nav-link:hover { color: #ffffff; background: rgba(255,255,255,0.04); }
+
+    /* ── Hamburger ───────────────────────────────────────── */
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 20px;
+      height: 1.5px;
+      background: rgba(255,255,255,0.8);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    .hamburger:focus-visible { outline: 2px solid rgba(255,255,255,0.5); outline-offset: 2px; }
+
+    /* ── Responsive media queries ────────────────────────── */
+
+    /* Desktop: show nav links, hide hamburger */
+    @media (min-width: 768px) {
+      .desktop-nav  { display: flex !important; }
+      .hamburger    { display: none !important; }
+      #mobile-menu  { display: none !important; }
+    }
+
+    /* Mobile: hide nav links, show hamburger */
+    @media (max-width: 767px) {
+      .desktop-nav  { display: none !important; }
+      .hamburger    { display: flex !important; }
+      /* Mobile menu visibility controlled by .open class */
+      #mobile-menu.open { display: flex !important; }
+
+      /* Smaller logo in nav on mobile */
+      #nav-logo { height: 48px !important; }
+
+      /* Hero breathing room */
+      #hero > div { padding-top: 3rem !important; padding-bottom: 4rem !important; }
+      #hero-stat-bar { gap: 1.75rem !important; margin-top: 3rem !important; }
+    }
+
+    /* Fix service card grid overflow on narrow screens.
+       minmax(min(320px,100%), 1fr) lets the minimum shrink
+       to the container width when the screen is narrower than 320px. */
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+      gap: 1.5px;
+      background: rgba(35,35,35,0.08);
+    }
+
+    /* Same fix for client cards */
+    .client-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+      gap: 3rem;
+    }
+
+    /* Why section: two-column on ≥900px, single column below */
+    .why-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+    @media (max-width: 899px) {
+      .why-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .why-sticky { position: static !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NAV
+  ═══════════════════════════════════════════════════════ -->
+  <header id="nav">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+      <nav style="display:flex; align-items:center; justify-content:space-between; height:80px;">
+
+        <!-- Logo -->
+        <a href="#" style="display:flex; align-items:center; flex-shrink:0; text-decoration:none;">
+          <img
+            id="nav-logo"
+            src="brand_assets/Logo-600x-Black-150px.png"
+            alt="Scatterday Systems"
+            style="height:64px; width:auto;"
+          />
+        </a>
+
+        <!-- Desktop links -->
+        <div style="display:flex; align-items:center; gap:2.5rem;" class="desktop-nav">
+          <a href="#services" class="nav-link">Services</a>
+          <a href="#why" class="nav-link">Why Us</a>
+          <a href="#clients" class="nav-link">Who We Work With</a>
+          <a href="#contact" class="btn-primary" style="padding:0.6rem 1.5rem; font-size:0.75rem;">Get in Touch</a>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+
+      </nav>
+    </div>
+
+    <!-- Mobile nav -->
+    <div id="mobile-menu">
+      <a href="#services" class="mobile-nav-link">Services</a>
+      <a href="#why" class="mobile-nav-link">Why Us</a>
+      <a href="#clients" class="mobile-nav-link">Who We Work With</a>
+      <a href="#contact" class="mobile-nav-link" style="color:#ffffff;">Get in Touch</a>
+    </div>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       HERO
+  ═══════════════════════════════════════════════════════ -->
+  <section id="hero" class="noise">
+    <div class="glow-1"></div>
+    <div class="glow-2"></div>
+
+    <div style="max-width:1200px; margin:0 auto; padding:5rem 2rem 6rem;">
+
+      <p class="eyebrow reveal" style="color:rgba(255,255,255,0.85); margin-bottom:2rem;">
+        Utah's Premier Smart Home Integrator
+      </p>
+
+      <h1 class="display-heading reveal reveal-delay-1" style="max-width:760px; margin-bottom:2rem;">
+        Wired for the<br />way you live.
+      </h1>
+
+      <p class="body-copy reveal reveal-delay-2" style="max-width:520px; color:rgba(255,255,255,0.6); margin-bottom:3rem;">
+        From enterprise-grade networks to fully integrated smart homes — lighting, shades, audio, video, and security — Scatterday Systems designs and integrates technology that works the way your home should.
+      </p>
+
+      <div style="display:flex; flex-wrap:wrap; gap:1rem;" class="reveal reveal-delay-3">
+        <a href="#contact" class="btn-primary">
+          Get a Consultation
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;">
+            <path d="M2.5 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="#services" class="btn-ghost">View Services</a>
+      </div>
+
+      <!-- Stat bar -->
+      <div id="hero-stat-bar" style="display:flex; flex-wrap:wrap; gap:3rem; margin-top:5rem; padding-top:3rem; border-top:1px solid rgba(255,255,255,0.08);" class="reveal reveal-delay-4">
+        <div>
+          <p style="font-size:1.6rem; font-weight:500; letter-spacing:-0.03em;">Park City</p>
+          <p class="eyebrow" style="color:rgba(255,255,255,0.4); margin-top:0.25rem;">& Wasatch Front</p>
+        </div>
+        <div>
+          <p style="font-size:1.6rem; font-weight:500; letter-spacing:-0.03em;">End-to-End</p>
+          <p class="eyebrow" style="color:rgba(255,255,255,0.4); margin-top:0.25rem;">Smart Home Solutions</p>
+        </div>
+        <div>
+          <p style="font-size:1.6rem; font-weight:500; letter-spacing:-0.03em;">Enterprise-Grade</p>
+          <p class="eyebrow" style="color:rgba(255,255,255,0.4); margin-top:0.25rem;">Hardware &amp; design</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SERVICES
+  ═══════════════════════════════════════════════════════ -->
+  <section id="services" style="background:#ffffff; padding:7rem 0;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+
+      <div style="max-width:560px; margin-bottom:4rem;">
+        <p class="eyebrow reveal" style="color:rgba(35,35,35,0.4); margin-bottom:1rem;">What We Do</p>
+        <h2 class="section-heading reveal reveal-delay-1" style="color:#232323;">
+          Everything your home needs to run beautifully.
+        </h2>
+        <div class="section-divider reveal reveal-delay-2" style="background:#232323;"></div>
+        <p class="body-copy reveal reveal-delay-2" style="color:#555555;">
+          From structured cabling and Wi-Fi to whole-home audio, home theatres, smart lighting, motorized shades, and surveillance — we design and install it all. Every project starts with a plan.
+        </p>
+      </div>
+
+      <div class="service-grid">
+
+        <!-- 1: Consultation & Design -->
+        <div class="service-card reveal">
+          <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="6" width="32" height="32" rx="2"/>
+            <path d="M6 14h32M14 6v8M30 6v8"/>
+            <circle cx="22" cy="27" r="4"/>
+            <path d="M22 23v-3M22 31v3M18 27h-3M26 27h3"/>
+          </svg>
+          <h3>Consultation &amp; System Design</h3>
+          <p>We assess your needs, review blueprints, and build a complete system design before a single cable is run. Every great install starts with a great plan.</p>
+        </div>
+
+        <!-- 2: Structured Cabling & Wi-Fi (merged) -->
+        <div class="service-card reveal reveal-delay-1">
+          <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 34h24M14 34V22l8-10 8 10v12"/>
+            <path d="M10 22c3.2-4.4 7.4-7 12-7s8.8 2.6 12 7"/>
+            <path d="M16 26c1.6-2 3.6-3.2 6-3.2s4.4 1.2 6 3.2"/>
+            <circle cx="22" cy="30" r="1.5" fill="currentColor"/>
+          </svg>
+          <h3>Structured Cabling &amp; Wi-Fi</h3>
+          <p>Professional ethernet runs and networking rack builds — paired with enterprise-grade access points hardwired throughout. Full-home coverage, no dead zones, no guesswork.</p>
+        </div>
+
+        <!-- 3: Audio & Video -->
+        <div class="service-card reveal reveal-delay-2">
+          <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="10" width="24" height="18" rx="2"/>
+            <path d="M30 16l8-4v16l-8-4"/>
+            <path d="M6 28h24M14 32h8"/>
+            <circle cx="13" cy="19" r="3"/>
+            <path d="M13 16v6"/>
+          </svg>
+          <h3>Audio &amp; Video</h3>
+          <p>Whole-home audio, dedicated home theaters, in-ceiling and in-wall speaker wiring, TV mounting, projectors, and screens. One-touch control or zone-by-zone — whichever fits the way you live.</p>
+        </div>
+
+        <!-- 4: Lighting -->
+        <div class="service-card reveal reveal-delay-1">
+          <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 6v4M22 34v4M10.1 10.1l2.8 2.8M31.1 31.1l2.8 2.8M6 22h4M34 22h4M10.1 31.1l2.8-2.8M31.1 10.1l-2.8 2.8"/>
+            <circle cx="22" cy="22" r="7"/>
+            <path d="M18 30h8"/>
+          </svg>
+          <h3>Lighting Control</h3>
+          <p>Beautiful light, thoughtfully controlled. Smooth, flicker-free dimming with scenes for dinner, movies, and morning routines. Scheduled, occupancy-triggered, or voice-activated — and integrated seamlessly with your smart home.</p>
+        </div>
+
+        <!-- 5: Shades -->
+        <div class="service-card reveal reveal-delay-2">
+          <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="6" width="32" height="4" rx="1"/>
+            <path d="M10 10v24M34 10v24"/>
+            <rect x="10" y="10" width="24" height="16" rx="1"/>
+            <path d="M10 30h24M16 34h12"/>
+          </svg>
+          <h3>Motorized Shades</h3>
+          <p>The right light, the right privacy, the right view — exactly when you want it. Motorized shades that raise at sunrise, close at sunset, and pair with your lighting scenes for the perfect atmosphere, any time of day.</p>
+        </div>
+
+        <!-- 6: Security & Surveillance -->
+        <div class="service-card reveal reveal-delay-3">
+          <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="22" cy="20" r="7"/>
+            <circle cx="22" cy="20" r="2.5" fill="currentColor"/>
+            <path d="M22 6v4M22 34v4M6 22h4M34 22h4M10.1 10.1l2.8 2.8M31.1 31.1l2.8 2.8M31.1 10.1l-2.8 2.8M10.1 31.1l2.8 2.8"/>
+            <path d="M18 32h8"/>
+          </svg>
+          <h3>Security &amp; Surveillance</h3>
+          <p>PoE IP cameras positioned for maximum coverage, with NVR and local or cloud storage. Motion zones, real-time alerts, and remote viewing — peace of mind, always on.</p>
+        </div>
+
+        <!-- 7: Smart Home & Automation -->
+        <div class="service-card reveal reveal-delay-2">
+          <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 20L22 8l15 12v18H7V20z"/>
+            <rect x="17" y="28" width="10" height="10"/>
+            <circle cx="30" cy="16" r="4"/>
+            <path d="M30 13.5v5M27.5 16h5"/>
+          </svg>
+          <h3>Smart Home &amp; Automation</h3>
+          <p>Custom automation scenes, smart thermostats, and air quality sensors — all tied together with your integrated control system. Your home responds to you, not the other way around.</p>
+        </div>
+
+        <!-- 8: Ongoing Support -->
+        <div class="service-card reveal reveal-delay-3">
+          <svg class="service-icon" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="22" cy="22" r="14"/>
+            <path d="M22 14v8l5 3"/>
+            <path d="M8 22h4M32 22h4M22 8v4M22 32v4" opacity="0.4"/>
+          </svg>
+          <h3>Ongoing Support &amp; Maintenance</h3>
+          <p>Firmware updates, remote monitoring, and priority service calls. We don't disappear after install day — support plans mean you always have someone to call.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       WHY SCATTERDAY
+  ═══════════════════════════════════════════════════════ -->
+  <section id="why" class="noise" style="background:#232323; padding:7rem 0;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+
+      <div class="why-grid">
+
+        <!-- Left: Heading -->
+        <div class="why-sticky" style="position:sticky; top:120px;">
+          <p class="eyebrow reveal" style="color:rgba(255,255,255,0.35); margin-bottom:1rem;">Why Scatterday Systems</p>
+          <h2 class="section-heading reveal reveal-delay-1">
+            Built different.<br />On purpose.
+          </h2>
+          <div class="section-divider reveal reveal-delay-2"></div>
+          <p class="body-copy reveal reveal-delay-2" style="color:rgba(255,255,255,0.55);">
+            We're not a box-mover or a quick-install crew. Every system we build starts with a design — and ends with documentation, clean cable management, and ongoing support.
+          </p>
+        </div>
+
+        <!-- Right: List -->
+        <div style="display:flex; flex-direction:column; gap:2.5rem; padding-top:0.5rem;">
+
+          <div class="why-item reveal">
+            <span class="why-number">01</span>
+            <div>
+              <h3>Engineered, not just installed</h3>
+              <p>Every system starts with a design, not a product list. We map your space, document your preferences, and build to you.</p>
+            </div>
+          </div>
+
+          <div class="why-item reveal reveal-delay-1">
+            <span class="why-number">02</span>
+            <div>
+              <h3>Enterprise-grade hardware</h3>
+              <p>We spec the equipment and infrastructure to support your home now and scale with you into the future.</p>
+            </div>
+          </div>
+
+          <div class="why-item reveal reveal-delay-2">
+            <span class="why-number">03</span>
+            <div>
+              <h3>Clean work, always</h3>
+              <p>Cable management, port labeling, and as-built documentation are first-class deliverables — not afterthoughts.</p>
+            </div>
+          </div>
+
+          <div class="why-item reveal reveal-delay-3">
+            <span class="why-number">04</span>
+            <div>
+              <h3>Ongoing relationship</h3>
+              <p>Support plans keep your systems running and give you a direct line to the team that installed everything.</p>
+            </div>
+          </div>
+
+          <div class="why-item reveal reveal-delay-4">
+            <span class="why-number">05</span>
+            <div>
+              <h3>Utah roots</h3>
+              <p>We're local to Park City and the Wasatch Front — responsive, invested, and here for the long term.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       WHO WE WORK WITH
+  ═══════════════════════════════════════════════════════ -->
+  <section id="clients" style="background:#ffffff; padding:7rem 0;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+
+      <div style="max-width:560px; margin-bottom:4rem;">
+        <p class="eyebrow reveal" style="color:rgba(35,35,35,0.4); margin-bottom:1rem;">Who We Work With</p>
+        <h2 class="section-heading reveal reveal-delay-1" style="color:#232323;">
+          New builds, upgrades,<br />or somewhere in between.
+        </h2>
+        <div class="section-divider reveal reveal-delay-2" style="background:#232323;"></div>
+      </div>
+
+      <div class="client-grid">
+
+        <div class="client-card reveal">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#232323" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.25rem; opacity:0.7;">
+            <circle cx="16" cy="10" r="5"/>
+            <path d="M6 28c0-5.5 4.5-10 10-10s10 4.5 10 10"/>
+          </svg>
+          <h3>Homeowners</h3>
+          <p>Retrofit upgrades, Wi-Fi improvements, smart home additions, and ongoing tech support. Whether you're in a new build or a 10-year-old home, we'll make it work.</p>
+        </div>
+
+        <div class="client-card reveal reveal-delay-1">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#232323" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.25rem; opacity:0.7;">
+            <path d="M4 14L16 4l12 10v16H4V14z"/>
+            <path d="M10 30V20h12v10"/>
+          </svg>
+          <h3>Custom Builders &amp; General Contractors</h3>
+          <p>Pre-wire and rough-in coordination from framing through finish. Structured cabling, AV infrastructure, and tech documentation that integrates seamlessly with your build schedule.</p>
+        </div>
+
+        <div class="client-card reveal reveal-delay-2">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#232323" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1.25rem; opacity:0.7;">
+            <rect x="4" y="4" width="24" height="24" rx="2"/>
+            <path d="M4 12h24M12 4v8M20 4v8"/>
+            <path d="M9 19h14M9 24h9"/>
+          </svg>
+          <h3>Interior Designers</h3>
+          <p>Technology planning integrated into the design process from the start. We collaborate with your team early — so conduit paths, equipment closets, and AV infrastructure are designed in, not retrofitted.</p>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SERVICE AREA BANNER
+  ═══════════════════════════════════════════════════════ -->
+  <section style="background:#f5f5f5; border-top:1px solid rgba(35,35,35,0.08); border-bottom:1px solid rgba(35,35,35,0.08); padding:3rem 0;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1.5rem;">
+      <div>
+        <p class="eyebrow reveal" style="color:rgba(35,35,35,0.4); margin-bottom:0.5rem;">Service Area</p>
+        <p class="reveal reveal-delay-1" style="font-size:1.1rem; font-weight:500; letter-spacing:-0.02em; color:#232323;">
+          Park City &amp; the Wasatch Front and Back
+        </p>
+        <p class="reveal reveal-delay-2" style="font-size:0.85rem; font-weight:300; color:#666; margin-top:0.25rem;">
+          Summit County, Salt Lake County, Utah County, and surrounding areas
+        </p>
+      </div>
+      <a href="#contact" class="btn-dark reveal reveal-delay-2">Get in Touch</a>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       CTA / CONTACT
+  ═══════════════════════════════════════════════════════ -->
+  <section id="contact" class="noise" style="background:#232323; padding:8rem 0;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem; text-align:center;">
+
+      <p class="eyebrow reveal" style="color:rgba(255,255,255,0.35); margin-bottom:1.5rem;">Ready to Get Started?</p>
+
+      <h2 class="section-heading reveal reveal-delay-1" style="max-width:640px; margin:0 auto 1.5rem;">
+        Let's design a system that fits your home.
+      </h2>
+
+      <p class="body-copy reveal reveal-delay-2" style="max-width:480px; margin:0 auto 3rem; color:rgba(255,255,255,0.55);">
+        Start with a consultation. We'll learn about your home, your goals, and put together a plan — no commitment required.
+      </p>
+
+      <div class="reveal reveal-delay-3">
+        <a href="mailto:hello@scatterdaysystems.com" class="btn-primary" style="font-size:0.8rem;">
+          Contact Us
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;">
+            <path d="M2.5 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════ -->
+  <footer style="background:#1a1a1a; border-top:1px solid rgba(255,255,255,0.06); padding:3rem 0 2rem;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:2rem; margin-bottom:2.5rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+
+        <img
+          src="brand_assets/Logo-600x-Black-150px.png"
+          alt="Scatterday Systems"
+          style="height:52px; width:auto; opacity:0.85;"
+        />
+
+        <nav style="display:flex; flex-wrap:wrap; gap:2rem;">
+          <a href="#services" class="nav-link" style="font-size:0.75rem;">Services</a>
+          <a href="#why" class="nav-link" style="font-size:0.75rem;">Why Us</a>
+          <a href="#clients" class="nav-link" style="font-size:0.75rem;">Who We Work With</a>
+          <a href="#contact" class="nav-link" style="font-size:0.75rem;">Contact</a>
+        </nav>
+
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+        <p style="font-size:0.75rem; font-weight:300; color:rgba(255,255,255,0.3); letter-spacing:0.02em;">
+          &copy; 2025 Scatterday Systems, LLC. All rights reserved.
+        </p>
+        <p style="font-size:0.75rem; font-weight:300; color:rgba(255,255,255,0.25); letter-spacing:0.02em;">
+          Park City, Utah
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════════════════ -->
+  <script>
+    // ── Nav scroll state ──────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // ── Hamburger menu ────────────────────────────────────
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburgerBtn.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburgerBtn.classList.toggle('open', isOpen);
+      hamburgerBtn.setAttribute('aria-expanded', isOpen);
+    });
+
+    // Close mobile menu on link click
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamburgerBtn.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // ── Scroll reveal ─────────────────────────────────────
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    revealEls.forEach(el => observer.observe(el));
+
+    // Close mobile menu if window grows past mobile breakpoint
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        mobileMenu.classList.remove('open');
+        hamburgerBtn.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      }
+    }, { passive: true });
+  </script>
+
+</body>
+</html>
