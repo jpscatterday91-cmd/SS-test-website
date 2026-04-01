@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
 
   <script>
     tailwind.config = {
@@ -425,14 +424,6 @@
         <!-- Right: form -->
         <div class="reveal reveal-delay-1">
 
-          <!-- Success / error banners (controlled by @formspree/ajax) -->
-          <p data-fs-success style="display:none; font-size:0.875rem; font-weight:400; color:#2d6a4f; margin-bottom:1rem;">
-            Message sent — we'll be in touch within one business day.
-          </p>
-          <p data-fs-error style="display:none; font-size:0.875rem; font-weight:400; color:#9b2226; margin-bottom:1rem;">
-            Something went wrong. Please try again or email us directly at <a href="mailto:hello@scattsystems.com" style="color:#9b2226;">hello@scattsystems.com</a>.
-          </p>
-
           <form
             action="https://formspree.io/f/mojplpno"
             method="POST"
@@ -453,11 +444,9 @@
                   name="name"
                   placeholder="Jane Smith"
                   required
-                  data-fs-field
                   class="form-input"
                   style="color:#232323; background:rgba(35,35,35,0.03); border-color:rgba(35,35,35,0.15);"
                 />
-                <span data-fs-error="name" style="font-size:0.78rem; color:#9b2226; margin-top:0.25rem;"></span>
               </div>
               <div class="form-field">
                 <label for="email" class="form-label" style="color:rgba(35,35,35,0.5);">Email Address</label>
@@ -467,11 +456,9 @@
                   name="email"
                   placeholder="jane@example.com"
                   required
-                  data-fs-field
                   class="form-input"
                   style="color:#232323; background:rgba(35,35,35,0.03); border-color:rgba(35,35,35,0.15);"
                 />
-                <span data-fs-error="email" style="font-size:0.78rem; color:#9b2226; margin-top:0.25rem;"></span>
               </div>
             </div>
 
@@ -483,11 +470,9 @@
                 id="phone"
                 name="phone"
                 placeholder="(435) 555-0100"
-                data-fs-field
                 class="form-input"
                 style="color:#232323; background:rgba(35,35,35,0.03); border-color:rgba(35,35,35,0.15);"
               />
-              <span data-fs-error="phone" style="font-size:0.78rem; color:#9b2226; margin-top:0.25rem;"></span>
             </div>
 
             <!-- Message -->
@@ -498,22 +483,28 @@
                 name="message"
                 placeholder="New construction, retrofit, commercial buildout — give us the details. What are you trying to accomplish?"
                 required
-                data-fs-field
                 class="form-textarea"
                 style="color:#232323; background:rgba(35,35,35,0.03); border-color:rgba(35,35,35,0.15);"
               ></textarea>
-              <span data-fs-error="message" style="font-size:0.78rem; color:#9b2226; margin-top:0.25rem;"></span>
             </div>
 
             <!-- Submit -->
             <div>
-              <button type="submit" class="form-submit" data-fs-submit-btn>
+              <button type="submit" id="form-submit-btn" class="form-submit">
                 Send Message
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;">
                   <path d="M2.5 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </button>
             </div>
+
+            <!-- Success / error messages -->
+            <p id="form-success" style="display:none; font-size:0.875rem; font-weight:400; color:#2d6a4f; margin-top:0.25rem;">
+              Message sent — we'll be in touch within one business day.
+            </p>
+            <p id="form-error" style="display:none; font-size:0.875rem; font-weight:400; color:#9b2226; margin-top:0.25rem;">
+              Something went wrong. Please try again or email us directly at <a href="mailto:hello@scattsystems.com" style="color:#9b2226;">hello@scattsystems.com</a>.
+            </p>
 
           </form>
         </div>
@@ -616,9 +607,40 @@
 
     revealEls.forEach(el => observer.observe(el));
 
-    // ── Formspree AJAX ────────────────────────────────────
-    window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
-    formspree('initForm', { formElement: '#contact-form', formId: 'mojplpno' });
+    // ── Form AJAX submit ──────────────────────────────────
+    const contactForm   = document.getElementById('contact-form');
+    const submitBtn     = document.getElementById('form-submit-btn');
+    const successMsg    = document.getElementById('form-success');
+    const errorMsg      = document.getElementById('form-error');
+
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch('https://formspree.io/f/mojplpno', {
+          method: 'POST',
+          body: new FormData(contactForm),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (res.ok) {
+          contactForm.reset();
+          successMsg.style.display = 'block';
+          errorMsg.style.display = 'none';
+          submitBtn.textContent = 'Sent ✓';
+        } else {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || 'Server error');
+        }
+      } catch {
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send Message <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;"><path d="M2.5 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      }
+    });
 
     // Light-background input focus fix (matches white section styles)
     document.querySelectorAll('.form-input, .form-textarea').forEach(el => {
