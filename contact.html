@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Scatterday Systems</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: '#232323',
+            light: '#ffffff',
+            'dark-muted': '#2e2e2e',
+            'dark-border': '#383838',
+            'light-muted': '#f5f5f5',
+            'text-muted': '#8a8a8a',
+          },
+          fontFamily: {
+            sans: ['Poppins', 'sans-serif'],
+          },
+          letterSpacing: {
+            tightest: '-0.04em',
+            tighter: '-0.03em',
+            tight: '-0.02em',
+            wide: '0.08em',
+            widest: '0.15em',
+          },
+          lineHeight: {
+            relaxed: '1.7',
+            loose: '1.85',
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #232323;
+      color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Noise texture overlay ───────────────────────────── */
+    .noise {
+      position: relative;
+    }
+    .noise::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      opacity: 0.028;
+      z-index: 0;
+    }
+    .noise > * { position: relative; z-index: 1; }
+
+    /* ── Typography ──────────────────────────────────────── */
+    .display-heading {
+      font-size: clamp(2.6rem, 6vw, 5.5rem);
+      font-weight: 500;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+    }
+    .section-heading {
+      font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+    .eyebrow {
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+    .body-copy {
+      font-weight: 300;
+      line-height: 1.75;
+      font-size: 1.05rem;
+    }
+
+    /* ── Nav ─────────────────────────────────────────────── */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(35, 35, 35, 0.82);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    #nav.scrolled {
+      background: rgba(35, 35, 35, 0.97);
+      border-bottom-color: rgba(255,255,255,0.1);
+    }
+    .nav-link {
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      padding: 0.25rem 0;
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; left: 0; right: 100%;
+      height: 1px;
+      background: #ffffff;
+      transition: right 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .nav-link:hover { color: #ffffff; }
+    .nav-link:hover::after { right: 0; }
+
+    /* ── Buttons ─────────────────────────────────────────── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #ffffff;
+      color: #232323;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.875rem 2.25rem;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .btn-primary:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .btn-primary:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 3px;
+    }
+
+    /* ── Mobile menu ─────────────────────────────────────── */
+    #mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      background: #1e1e1e;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 1rem 0;
+    }
+    #mobile-menu.open { display: flex; }
+    .mobile-nav-link {
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .mobile-nav-link:hover { color: #ffffff; background: rgba(255,255,255,0.04); }
+
+    /* ── Hamburger ───────────────────────────────────────── */
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 20px;
+      height: 1.5px;
+      background: rgba(255,255,255,0.8);
+      transition: transform 0.25s ease, opacity 0.25s ease;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+    .hamburger:focus-visible { outline: 2px solid rgba(255,255,255,0.5); outline-offset: 2px; }
+
+    /* ── Scroll reveal ───────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s cubic-bezier(0.4, 0, 0.2, 1), transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (min-width: 768px) {
+      .desktop-nav  { display: flex !important; }
+      .hamburger    { display: none !important; }
+      #mobile-menu  { display: none !important; }
+    }
+    @media (max-width: 767px) {
+      .desktop-nav  { display: none !important; }
+      .hamburger    { display: flex !important; }
+      #mobile-menu.open { display: flex !important; }
+      #nav-logo { height: 48px !important; }
+    }
+
+    /* ── Form styles ─────────────────────────────────────── */
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .form-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .form-input,
+    .form-textarea {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 300;
+      color: #ffffff;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 0.875rem 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      border-radius: 0;
+    }
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: rgba(255,255,255,0.2);
+    }
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: rgba(255,255,255,0.45);
+      background: rgba(255,255,255,0.08);
+    }
+    .form-textarea {
+      resize: vertical;
+      min-height: 160px;
+    }
+    .form-submit {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #ffffff;
+      color: #232323;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.875rem 2.25rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25), 0 1px 3px rgba(0,0,0,0.15);
+    }
+    .form-submit:hover {
+      background: #f0f0f0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .form-submit:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+    .form-submit:focus-visible { outline: 2px solid #ffffff; outline-offset: 3px; }
+
+    /* Two-col form grid */
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+    }
+    @media (max-width: 599px) {
+      .form-grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NAV
+  ═══════════════════════════════════════════════════════ -->
+  <header id="nav">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+      <nav style="display:flex; align-items:center; justify-content:space-between; height:80px;">
+
+        <!-- Logo -->
+        <a href="index.html" style="display:flex; align-items:center; flex-shrink:0; text-decoration:none;">
+          <img
+            id="nav-logo"
+            src="brand-assets/Logo-600x-Black-150px.png"
+            alt="Scatterday Systems"
+            style="height:64px; width:auto;"
+          />
+        </a>
+
+        <!-- Desktop links -->
+        <div style="display:flex; align-items:center; gap:2.5rem;" class="desktop-nav">
+          <a href="index.html#services" class="nav-link">Services</a>
+          <a href="index.html#why" class="nav-link">Why Us</a>
+          <a href="index.html#clients" class="nav-link">Who We Work With</a>
+          <a href="contact.html" class="btn-primary" style="padding:0.6rem 1.5rem; font-size:0.75rem;">Get in Touch</a>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button class="hamburger" id="hamburger-btn" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+
+      </nav>
+    </div>
+
+    <!-- Mobile nav -->
+    <div id="mobile-menu">
+      <a href="index.html#services" class="mobile-nav-link">Services</a>
+      <a href="index.html#why" class="mobile-nav-link">Why Us</a>
+      <a href="index.html#clients" class="mobile-nav-link">Who We Work With</a>
+      <a href="contact.html" class="mobile-nav-link" style="color:#ffffff;">Get in Touch</a>
+    </div>
+  </header>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       PAGE HEADER
+  ═══════════════════════════════════════════════════════ -->
+  <section class="noise" style="background:#232323; padding-top:160px; padding-bottom:6rem;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+
+      <p class="eyebrow reveal" style="color:rgba(255,255,255,0.35); margin-bottom:1.5rem;">Let's Talk</p>
+
+      <h1 class="section-heading reveal reveal-delay-1" style="max-width:640px; margin-bottom:1.5rem;">
+        Start with a conversation.
+      </h1>
+
+      <p class="body-copy reveal reveal-delay-2" style="max-width:500px; color:rgba(255,255,255,0.55);">
+        Tell us a bit about your project and we'll get back to you within one business day. No commitment required — just a conversation.
+      </p>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       CONTACT FORM
+  ═══════════════════════════════════════════════════════ -->
+  <section style="background:#ffffff; padding:6rem 0 7rem;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+
+      <div style="display:grid; grid-template-columns:1fr 2fr; gap:6rem; align-items:start;">
+
+        <!-- Left: contact details -->
+        <div class="reveal" style="padding-top:0.25rem;">
+          <p class="eyebrow" style="color:rgba(35,35,35,0.4); margin-bottom:2rem;">Contact Details</p>
+
+          <div style="display:flex; flex-direction:column; gap:2rem;">
+
+            <div>
+              <p style="font-size:0.72rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:rgba(35,35,35,0.4); margin-bottom:0.4rem;">Email</p>
+              <a href="mailto:hello@scattsystems.com" style="font-size:0.9rem; font-weight:400; color:#232323; text-decoration:none; transition:color 0.2s ease;"
+                 onmouseover="this.style.color='#555555'" onmouseout="this.style.color='#232323'">
+                hello@scattsystems.com
+              </a>
+            </div>
+
+            <div>
+              <p style="font-size:0.72rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:rgba(35,35,35,0.4); margin-bottom:0.4rem;">Location</p>
+              <p style="font-size:0.9rem; font-weight:300; color:#555555; line-height:1.6;">
+                Park City, Utah<br />
+                Serving the Wasatch Front &amp; Back
+              </p>
+            </div>
+
+            <div>
+              <p style="font-size:0.72rem; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:rgba(35,35,35,0.4); margin-bottom:0.4rem;">Response Time</p>
+              <p style="font-size:0.9rem; font-weight:300; color:#555555;">Within one business day</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right: form -->
+        <div class="reveal reveal-delay-1">
+
+          <form
+            action="https://formspree.io/f/mojplpno"
+            method="POST"
+            id="contact-form"
+            style="display:flex; flex-direction:column; gap:1.5rem;"
+          >
+
+            <!-- Honeypot (spam protection) -->
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="display:none;" />
+
+            <!-- Name + Email -->
+            <div class="form-grid-2">
+              <div class="form-field">
+                <label for="name" class="form-label" style="color:rgba(35,35,35,0.5);">Full Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Jane Smith"
+                  required
+                  class="form-input"
+                  style="color:#232323; background:rgba(35,35,35,0.03); border-color:rgba(35,35,35,0.15);"
+                />
+              </div>
+              <div class="form-field">
+                <label for="email" class="form-label" style="color:rgba(35,35,35,0.5);">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="jane@example.com"
+                  required
+                  class="form-input"
+                  style="color:#232323; background:rgba(35,35,35,0.03); border-color:rgba(35,35,35,0.15);"
+                />
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="form-field">
+              <label for="phone" class="form-label" style="color:rgba(35,35,35,0.5);">Phone Number</label>
+              <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="(435) 555-0100"
+                class="form-input"
+                style="color:#232323; background:rgba(35,35,35,0.03); border-color:rgba(35,35,35,0.15);"
+              />
+            </div>
+
+            <!-- Message -->
+            <div class="form-field">
+              <label for="message" class="form-label" style="color:rgba(35,35,35,0.5);">Tell Us About Your Project</label>
+              <textarea
+                id="message"
+                name="message"
+                placeholder="New construction, retrofit, commercial buildout — give us the details. What are you trying to accomplish?"
+                required
+                class="form-textarea"
+                style="color:#232323; background:rgba(35,35,35,0.03); border-color:rgba(35,35,35,0.15);"
+              ></textarea>
+            </div>
+
+            <!-- Submit -->
+            <div>
+              <button type="submit" class="form-submit">
+                Send Message
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;">
+                  <path d="M2.5 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Success / error messages (shown via JS) -->
+            <p id="form-success" style="display:none; font-size:0.875rem; font-weight:400; color:#2d6a4f; margin-top:0.5rem;">
+              Message sent — we'll be in touch within one business day.
+            </p>
+            <p id="form-error" style="display:none; font-size:0.875rem; font-weight:400; color:#9b2226; margin-top:0.5rem;">
+              Something went wrong. Please try again or email us directly at jp@scattsystems.com.
+            </p>
+
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Responsive: stack on narrow screens -->
+      <style>
+        @media (max-width: 767px) {
+          #form-layout { grid-template-columns: 1fr !important; gap: 3rem !important; }
+        }
+      </style>
+
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════ -->
+  <footer style="background:#1a1a1a; border-top:1px solid rgba(255,255,255,0.06); padding:3rem 0 2rem;">
+    <div style="max-width:1200px; margin:0 auto; padding:0 2rem;">
+
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:2rem; margin-bottom:2.5rem; padding-bottom:2.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+
+        <img
+          src="brand-assets/Logo-600x-Black-150px.png"
+          alt="Scatterday Systems"
+          style="height:52px; width:auto; opacity:0.85;"
+        />
+
+        <nav style="display:flex; flex-wrap:wrap; gap:2rem;">
+          <a href="index.html#services" class="nav-link" style="font-size:0.75rem;">Services</a>
+          <a href="index.html#why" class="nav-link" style="font-size:0.75rem;">Why Us</a>
+          <a href="index.html#clients" class="nav-link" style="font-size:0.75rem;">Who We Work With</a>
+          <a href="contact.html" class="nav-link" style="font-size:0.75rem;">Contact</a>
+        </nav>
+
+      </div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+        <p style="font-size:0.75rem; font-weight:300; color:rgba(255,255,255,0.3); letter-spacing:0.02em;">
+          &copy; 2025 Scatterday Systems, LLC. All rights reserved.
+        </p>
+        <p style="font-size:0.75rem; font-weight:300; color:rgba(255,255,255,0.25); letter-spacing:0.02em;">
+          Park City, Utah
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════════════════ -->
+  <script>
+    // ── Nav scroll state ──────────────────────────────────
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // ── Hamburger menu ────────────────────────────────────
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburgerBtn.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburgerBtn.classList.toggle('open', isOpen);
+      hamburgerBtn.setAttribute('aria-expanded', isOpen);
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        hamburgerBtn.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) {
+        mobileMenu.classList.remove('open');
+        hamburgerBtn.classList.remove('open');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+      }
+    }, { passive: true });
+
+    // ── Scroll reveal ─────────────────────────────────────
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    revealEls.forEach(el => observer.observe(el));
+
+    // ── Form AJAX submit ──────────────────────────────────
+    const form = document.getElementById('contact-form');
+    const successMsg = document.getElementById('form-success');
+    const errorMsg = document.getElementById('form-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+
+        if (res.ok) {
+          form.reset();
+          successMsg.style.display = 'block';
+          errorMsg.style.display = 'none';
+          submitBtn.textContent = 'Sent';
+        } else {
+          throw new Error('Server error');
+        }
+      } catch {
+        errorMsg.style.display = 'block';
+        successMsg.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Send Message <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0;"><path d="M2.5 7h9M7.5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      }
+    });
+
+    // Light-background input focus fix (matches white section styles)
+    document.querySelectorAll('.form-input, .form-textarea').forEach(el => {
+      el.addEventListener('focus', () => {
+        el.style.borderColor = 'rgba(35,35,35,0.45)';
+        el.style.background = 'rgba(35,35,35,0.06)';
+      });
+      el.addEventListener('blur', () => {
+        el.style.borderColor = 'rgba(35,35,35,0.15)';
+        el.style.background = 'rgba(35,35,35,0.03)';
+      });
+    });
+  </script>
+
+</body>
+</html>

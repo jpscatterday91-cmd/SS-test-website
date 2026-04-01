@@ -1,0 +1,50 @@
+---
+name: brand-guidelines
+description: Enforce brand identity, visual standards, and voice/tone across all marketing materials, code, documentation, and communications.
+---
+
+# Brand Guidelines Skill
+
+This skill ensures all generated content adheres to the brand's identity system.
+
+## Main Colors
+- Dark: Use hex code #232323 - Primary text and dark backgrounds
+- Light: Use hex code #FFFFFF - Primary backgrounds and text on dark
+- Mid Gray: Use hex code #e5e7eb - Secondary elements and borders
+- Gray: Use hex code #555555 - Secondary text on light
+- Light Gray: Use hex code #f5f5f5 - Subtle backgrounds
+
+## Typography
+- **Headlines**: Poppins (fallback to Arial)
+- **Body Text**: Poppins (fallback to Arial)
+- **Eyebrows**: Poppins (fallback to Arial)
+
+- **Logo Usage:** Maintain a minimum clear space of 30 pixels or 0.25x the height of the logo and avoid stretching or unauthorized color variations.
+
+## Smart Font Application
+- Applies Poppins font to headings (24pt and larger)
+- Applies Poppins font to body text
+- Automatically falls back to Arial if custom fonts unavailable
+- Preserves readability across all systems
+
+## Text Styling
+- Headings (24pt): Poppins font and 500pt weight, 1.15 line height
+- Eyebrows: Poppins font, uppercase font, 16pt bottom margin 
+- Body text: Poppins font, 300pt weight
+- Smart color selection based on background
+- Preserves text hierarchy and formatting
+
+## Technical Details
+
+### Font Management:
+- Uses system-installed Poppins font when available
+- Provides automatic fallback to Arial (Headings and Body)
+
+## Voice and Tone
+- **Attributes:** Professional yet accessible, authoritative but not condescending.
+- **Constraints:** Avoid jargon; use active voice.
+
+3. **Checklist Validation:** Audit every output against the following:
+   - Do colors match the approved palette?
+   - Is the typography weight correct?
+   - Does imagery style align with brand attributes?
